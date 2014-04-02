@@ -14,6 +14,8 @@ package de.marrrschine;
 
 import com.vaadin.Application;
 import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
@@ -28,7 +30,8 @@ public class MyVaadinApplication extends Application {
 	public void init() {
 		window = new Window("My Vaadin Application");
 		setMainWindow(window);
-
+		ServiceConsumer serviceConsumer = new ServiceConsumer();
+		String out = serviceConsumer.consumeServiceGet("nix");
 		final Table table = new Table("The Brightest Stars");
 		// Define two columns for the built-in container
 		table.addContainerProperty("Name", String.class, null);
@@ -44,9 +47,23 @@ public class MyVaadinApplication extends Application {
 		table.addItem(new Object[] { "Canopus", -0.72f }, 2);
 		table.addItem(new Object[] { "Arcturus", -0.04f }, 3);
 		table.addItem(new Object[] { "Alpha Centauri", -0.01f }, 4);
+		table.addItem(new Object[] { "Starname", -0.32f }, 5);
+
+		//table.addItem(new Object[] { out, -0.01f }, 6);
 
 		// Show 5 rows
 		table.setPageLength(5);
+
+		final Button button = new Button("Click Me!");
+		// Handle the events with an anonymous class
+		button.addListener(new Button.ClickListener() {
+			public void buttonClick(ClickEvent event) {
+				button.setCaption("You made me click!");
+			}
+		});
 		window.addComponent(table);
+		window.addComponent(button);
+		System.out.println(out);
+
 	}
 }
