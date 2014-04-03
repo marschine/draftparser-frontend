@@ -14,6 +14,7 @@ package de.marrrschine;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Button;
@@ -25,7 +26,7 @@ import com.vaadin.ui.Window;
  * The Application's "main" class
  */
 @SuppressWarnings("serial")
-public class MyVaadinApplication extends Application implements CallbackEvent {
+public class MyVaadinApplication extends Application {
 	private Window window;
 
 	@Override
@@ -37,41 +38,51 @@ public class MyVaadinApplication extends Application implements CallbackEvent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ServiceConsumer serviceConsumer = new ServiceConsumer();
-				JSONArray jsonArray = serviceConsumer.consumeServiceGet();
+				// JSONArray jsonArray = serviceConsumer.consumeServiceGet();
 			}
 		});
 		window.addComponent(button);
-		
+
 		ServiceConsumer serviceConsumer = new ServiceConsumer();
-		JSONArray jsonArray = serviceConsumer.consumeServiceGet();
 		final Table table = new Table("Available Prospects");
 		table.addContainerProperty("Firstname", String.class, null);
 		table.addContainerProperty("Lastname", String.class, null);
-		int i = 0;
-		for (Object object : jsonArray) {
-			i++;
-			JSONObject json = (JSONObject) object;
-			table.addItem(new Object[] { json.get("firstname"), json.get("lastname") }, i);
+		JSONArray jsonArray;
+		try {
+			jsonArray = serviceConsumer.consumeServiceGet();
+			int i = 0;
+			for (Object object : jsonArray) {
+				i++;
+				JSONObject jsonObj = (JSONObject) object;
+				// System.out.println(object.get("firstname"));
+				String firstname = (String) jsonObj.get("firstname");
+				String lastname = (String) jsonObj.get("lastname");
+				// String lastname = (String) object.get("lastname");
+				table.addItem(new Object[] { firstname, lastname }, i);
+				table.setPageLength(i);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		table.setPageLength(i);
 		window.addComponent(table);
 	}
 
-	@Override
-	public void callbackEvent(JSONArray jsonArray) {
-		final Table table = new Table("Available Prospects");
-		table.addContainerProperty("Firstname", String.class, null);
-		table.addContainerProperty("Lastname", String.class, null);
-		int i = 0;
-		for (Object object : jsonArray) {
-			i++;
-			JSONObject json = (JSONObject) object;
-			table.addItem(new Object[] { json.get("firstname"), json.get("lastname") }, i);
-		}
-		table.setPageLength(i);
-		window.addComponent(table);
-
-	}
+	// @Override
+	// public void callbackEvent(JSONArray jsonArray) {
+	// final Table table = new Table("Available Prospects");
+	// table.addContainerProperty("Firstname", String.class, null);
+	// table.addContainerProperty("Lastname", String.class, null);
+	// int i = 0;
+	// for (Object object : jsonArray) {
+	// i++;
+	// JSONObject json = (JSONObject) object;
+	// table.addItem(new Object[] { json.get("firstname"), json.get("lastname") }, i);
+	// }
+	// table.setPageLength(i);
+	// window.addComponent(table);
+	//
+	// }
 }
 
 // private ServiceConsumer serviceConsumer = new ServiceConsumer();
